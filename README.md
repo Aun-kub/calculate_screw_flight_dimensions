@@ -1,5 +1,4 @@
-# calculate_screw_flight_dimensions
-mport numpy as np
+import numpy as np
 import matplotlib.pyplot as plt
 
 def calculate_screw_flight_dimensions(outer_diameter, inner_diameter, pitch, material_thickness):
@@ -112,7 +111,7 @@ def generate_flight_pattern_data(outer_radius, inner_radius, sweep_angle_degrees
         "line1_x": line1_x,
         "line1_y": line1_y,
         "line2_x": line2_x,
-        "line2_y": line2_y,
+        "line2_y": line2_angle_text_y,
     }
 
 
@@ -151,6 +150,43 @@ if calculate_button:
         # Plot the second connecting line
         ax.plot(flight_pattern_data["line2_x"], flight_pattern_data["line2_y"], label="Connecting Line 2", color='purple')
 
+        # Add lines to show R1 and R2
+        # Line for R1 (from origin to a point on the outer arc)
+        r1_line_x = [0, flight_pattern_data["outer_arc_x"][0]] # Using the first point on the outer arc
+        r1_line_y = [0, flight_pattern_data["outer_arc_y"][0]]
+        ax.plot(r1_line_x, r1_line_y, 'k--', lw=1, label='Outer Radius (R1)') # 'k--' for black dashed line
+
+        # Line for R2 (from origin to a point on the inner arc)
+        r2_line_x = [0, flight_pattern_data["inner_arc_x"][0]] # Using the first point on the inner arc
+        r2_line_y = [0, flight_pattern_data["inner_arc_y"][0]]
+        ax.plot(r2_line_x, r2_line_y, 'k:', lw=1, label='Inner Radius (R2)') # 'k:' for black dotted line
+
+
+        # Add annotations for R1 and R2 values
+        outer_radius_developed = flight_dimensions['outer_radius']
+        inner_radius_developed = flight_dimensions['inner_radius']
+        sweep_angle_degrees = flight_dimensions['sweep_angle_degrees']
+
+        # Annotate Outer Radius (R1)
+        # Choose a point on the outer arc (e.g., near the start)
+        annotate_x_r1 = outer_radius_developed * np.cos(np.radians(10)) # A small angle for clarity
+        annotate_y_r1 = outer_radius_developed * np.sin(np.radians(10))
+        ax.annotate(f'R1: {outer_radius_developed:.2f} mm',
+                    xy=(annotate_x_r1, annotate_y_r1),
+                    xytext=(annotate_x_r1 + 50, annotate_y_r1 + 50), # Offset text
+                    arrowprops=dict(facecolor='black', shrink=0.05),
+                    fontsize=10)
+
+        # Annotate Inner Radius (R2)
+        # Choose a point on the inner arc (e.g., near the start)
+        annotate_x_r2 = inner_radius_developed * np.cos(np.radians(10)) # Same small angle
+        annotate_y_r2 = inner_radius_developed * np.sin(np.radians(10))
+        ax.annotate(f'R2: {inner_radius_developed:.2f} mm',
+                    xy=(annotate_x_r2, annotate_y_r2),
+                    xytext=(annotate_x_r2 + 30, annotate_y_r2 + 30), # Offset text
+                    arrowprops=dict(facecolor='black', shrink=0.05),
+                    fontsize=10)
+
         # Ensure the aspect ratio of the plot is equal
         ax.set_aspect('equal', adjustable='box')
 
@@ -178,3 +214,4 @@ if calculate_button:
         # Display any other unexpected errors
         results_placeholder.error(f"An unexpected error occurred: {e}")
         plot_placeholder.empty() # Clear the plot area on error
+        
